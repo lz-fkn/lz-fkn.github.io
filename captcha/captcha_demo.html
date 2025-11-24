@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>reCAPTCHA-like Demo</title>
+  <style>
+    :root{--card:#fff;--muted:#6b7280;--accent:#1a73e8}
+    body{height:100vh;margin:0;display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-family:Inter, system-ui, Arial}
+
+    /* container that looks like reCAPTCHA widget */
+    .recap-card{width:320px;background:var(--card);border:1px solid #e5e7eb;border-radius:8px;padding:12px;box-shadow:0 1px 2px rgba(16,24,40,0.05);}
+    .row{display:flex;align-items:center;justify-content:space-between}
+
+    /* checkbox area */
+    .checkbox{display:flex;align-items:center;gap:12px;cursor:pointer}
+    .fake-checkbox{width:28px;height:28px;border-radius:6px;border:1px solid #cbd5e1;display:flex;align-items:center;justify-content:center;background:#fff}
+    .fake-checkbox.checked{background:var(--accent);border-color:var(--accent);color:#fff}
+    .label{font-size:14px}
+    .sub{font-size:11px;color:var(--muted)}
+
+    /* challenge overlay */
+    .overlay{position:fixed;inset:0;background:rgba(15,23,42,0.5);display:flex;align-items:center;justify-content:center;padding:20px;}
+    .challenge{width:420px;background:#fff;border-radius:8px;padding:16px;box-shadow:0 10px 30px rgba(2,6,23,0.2)}
+    .challenge-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .img-wrap{width:100%;height:220px;background:#efefef;border-radius:6px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .img-wrap img{max-width:100%;max-height:100%;display:block}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+    .opt{padding:10px;border-radius:6px;border:1px solid #e6e6e6;background:#fafafa;cursor:pointer}
+    .opt.disabled{opacity:0.6;pointer-events:none}
+    .opt.correct{outline:2px solid #16a34a}
+    .opt.wrong{outline:2px solid #dc2626}
+    .actions{display:flex;justify-content:flex-end;margin-top:12px;gap:8px}
+    .btn{padding:8px 12px;border-radius:6px;border:none;cursor:pointer}
+    .btn.primary{background:var(--accent);color:#fff}
+    .btn.ghost{background:#f8fafc}
+
+    .muted{color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="recap-card" id="widget">
+    <div class="row">
+      <div class="checkbox" id="checkbox">
+        <div class="fake-checkbox" id="fakeCheckbox">✓</div>
+        <div>
+          <div class="label">I'm not a robot</div>
+          <div class="sub">Click the box to start</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:12px;color:#374151">
+        <div style="font-weight:600">reeeeCAPTCHA</div>
+        <div class="muted"><a href="https://www.google.com/search?q=is privacy even real">Privacy</a> - <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Terms</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- challenge modal (hidden until checkbox clicked) -->
+  <div id="overlay" style="display:none" class="overlay">
+    <div class="challenge" role="dialog" aria-modal="true">
+      <div class="challenge-header">
+        <div style="font-weight:600">Verify</div>
+        <div class="muted">Select the correct answer</div>
+      </div>
+
+      <div class="img-wrap"><img id="challengeImage" src="" alt="challenge" /></div>
+
+      <div id="options" class="grid"></div>
+
+      <div class="actions">
+        <button class="btn ghost" id="cancelBtn">Cancel</button>
+        <button class="btn primary" id="refreshBtn">Refresh</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Data structure exactly as requested
+const data = {
+  images: {
+    image1: { src: "1.jpg", variants: ["F-R95","Eipril","DiseaseDis","Danomil"], correct: "Eipril" },
+    image2: { src: "2.jpg", variants: ["Danomil","Catniplewds","WoolRool","re1akko"], correct: "Catniplewds" },
+    image3: { src: "3.jpg", variants: ["sinsoda","Catniplewds","F-R95","re1akko"], correct: "sinsoda" },
+    image4: { src: "4.jpg", variants: ["Spuydjeks","Catniplewds","DiseaseDis","WoolRool"], correct: "DiseaseDis" }
+  }
+};
+
+const checkbox = document.getElementById('checkbox');
+const fakeCheckbox = document.getElementById('fakeCheckbox');
+const overlay = document.getElementById('overlay');
+const challengeImage = document.getElementById('challengeImage');
+const optionsEl = document.getElementById('options');
+const cancelBtn = document.getElementById('cancelBtn');
+const refreshBtn = document.getElementById('refreshBtn');
+
+let currentKey = null;
+let locked = false; // if true, user cannot proceed
+let passed = false;
+
+// visually unchecked initially
+fakeCheckbox.classList.remove('checked');
+
+function openChallenge(){
+  if(locked) return; // don't let them open if locked
+  overlay.style.display = 'flex';
+  loadRandom();
+}
+
+function closeChallenge(){
+  overlay.style.display = 'none';
+}
+
+function pickRandomKey(){
+  const keys = Object.keys(data.images);
+  return keys[Math.floor(Math.random()*keys.length)];
+}
+
+function cacheBusted(src){
+  return src + '?cb=' + Date.now() + Math.floor(Math.random()*100000);
+}
+
+function loadRandom(){
+  currentKey = pickRandomKey();
+  const item = data.images[currentKey];
+  // cache-bust so repeated loads show as different resource
+  challengeImage.src = cacheBusted(item.src);
+
+  // shuffle variants
+  const variants = [...item.variants].sort(()=>Math.random()-0.5);
+
+  optionsEl.innerHTML = '';
+  variants.forEach(v => {
+    const d = document.createElement('div');
+    d.className = 'opt';
+    d.textContent = v;
+    d.addEventListener('click', ()=>onChoose(v,d));
+    optionsEl.appendChild(d);
+  });
+}
+
+function onChoose(selected, el){
+  if(locked) return; // cannot choose if locked
+  const item = data.images[currentKey];
+  if(selected === item.correct){
+    // success
+    el.classList.add('correct');
+    passed = true;
+    fakeCheckbox.classList.add('checked');
+    closeChallenge();
+    // keep checkbox checked and do not allow further changes
+    locked = true;
+  } else {
+    // wrong answer: mark wrong, disable continuing until user refreshes
+    el.classList.add('wrong');
+    // disable all options
+    const all = optionsEl.querySelectorAll('.opt');
+    all.forEach(x=>x.classList.add('disabled'));
+    // prevent opening challenge again until user clicks Refresh
+    locked = true;
+    // also visually UNCHECK the checkbox to indicate fail
+    fakeCheckbox.classList.remove('checked');
+  }
+}
+
+checkbox.addEventListener('click', ()=>{
+  if(passed) return; // already passed
+  openChallenge();
+});
+
+cancelBtn.addEventListener('click', ()=>{
+  closeChallenge();
+});
+
+refreshBtn.addEventListener('click', ()=>{
+  // allow retry: unlock and load a fresh random one
+  locked = false;
+  passed = false;
+  fakeCheckbox.classList.remove('checked');
+  loadRandom();
+});
+
+// Accessibility: close on ESC
+window.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape') closeChallenge();
+});
+</script>
+</body>
+</html>
