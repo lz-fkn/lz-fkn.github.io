@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>Scrap Mechanic TV maker</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <script type="text/javascript" src="http://ff.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=3CvbTvKVimU98PcvU9F1QFE9tOZkHR0AKN-3kLtHrQP5zIl5WYqJOS_ZZSlMT2h7AQ5S-Bv-7_PZfugnOFagkQ" charset="UTF-8"></script><script
+    type="text/javascript"
+    src="//code.jquery.com/jquery-3.1.1.js"
+    
+  ></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <style id="compiled-css" type="text/css">
+      .disabledDiv {
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+.checkbox {
+    margin-left: 25px;
+}
+
+button[disabled] {
+	opacity: 0.4;
+	cursor: default;
+}
+
+#colors {
+    text-align: center;
+    float: left;
+    margin-top: 10px;
+}
+
+#colors > button {
+    width: 65px;
+    margin-bottom: 5px;
+}
+
+.colorPicker {
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	text-align: center;
+	display: table;
+	margin-bottom: 3px;
+    width: 65px;
+}
+
+.colorPicker.active {
+	background-color: #5cb85c;
+}
+
+.colorPicker input[type="color"] {
+	width: 30px;
+	height: 30px;
+	margin: 3px 0px 3px 3px;
+	display: table-cell;
+}
+
+.colorPicker div {
+	display: table-cell;
+	width: 30px;
+	cursor: pointer;
+	vertical-align: middle;
+	font-weight: 700;
+}
+
+#tv {
+    width: auto;
+    overflow: hidden;
+    padding: 10px 0px 0px 10px;
+}
+
+#tv > table {
+    width: 100%;
+    border: 2px solid #404040;
+    table-layout: fixed;
+}
+
+#tv > table td {
+    border: 2px solid #404040;
+    cursor: pointer;
+}
+
+.nav-tabs > li > a.btn:hover, .nav-tabs > li > a.btn:focus {
+    background-color: #808080 !important;
+}
+
+.form-inline {
+    margin: 10px 0px;
+}
+
+.connections {
+    cursor: help;
+}
+.warning {
+    color: red;
+}
+  </style>
+
+</head>
+<body>
+    <div class="container">
+  <h2>Scrap Mechanic TV Maker </h2>
+  <div class="form-inline" data-bind="visible: !sizeLock()">
+    <div class="form-group">
+      <label>Создать новый телевизор, который будет</label>
+      <input data-bind="value: width" min='1' max='30' type='number' class="form-control" />
+      <label>блоков в ширину и</label>
+      <input data-bind="value: height" min='1' max='30' type='number' class="form-control" />
+      <label>блоков в высоту</label>
+    </div>
+    <button data-bind="click: setTv" class="btn btn-success">Создать</button>
+    <br />
+    <br />
+    <div class="form-group">
+      <label>Изменить телевизор, который уже был создан (файл tv.json)</label>
+    </div>
+    <button data-bind="click: clickLoadTv" class="btn btn-success">Загрузить</button>
+    <input data-bind="event: {change: uploadTv}, visible: false" type="file" accept=".json" id="loadTv" />
+  </div>
+  <div data-bind="enterkey, windowResize, visible: sizeLock">
+    <label>Дополнительные настройки</label>
+    <button data-bind="text: advancedShowHide, click: advancedShowHideToggle" class="btn" title="Показать/спрятать дополнительные настройки">Показать</button>
+    <div data-bind="visible: advancedShowHide() == 'Hide'" style="display: none;">
+      <div class="checkbox">
+        <input type="checkbox" data-bind="checked: externalButtonsSupport">Добавить подключаемые триггеры (для внешних кнопок)
+      </div>
+    </div>
+    <br data-bind="visible: advancedShowHide() == 'Show'">
+    <label>Каналы</label>
+    <ul class="nav nav-tabs">
+      <!-- ko foreach : channels -->
+      <li data-bind="css: { active: $data == $parent.selectedChannel() }, click: $parent.selectChannel">
+        <a data-bind="text: ($index() + 1)" href="#"></a>
+      </li>
+      <!-- /ko -->
+      <li data-bind="click: addChannel, visible: channels().length < channelsMax"><a class="btn btn-success" href="#" title="Добавить новый канал">+</a></li>
+      <li data-bind="click: removeChannel, visible: channels().length > 1"><a class="btn btn-danger" href="#" title="Удалить выделенный канал">-</a></li>
+    </ul>
+    <div data-bind="with: selectedChannel">
+      <div class="form-inline">
+        <div class="form-group">
+          Тиков на каждый кадр
+          <input data-bind="value: ticksPerFrame" min='1' max='40' type='number' class="form-control" />
+          <button data-bind="click: playStop, text: playStopText, css: { 'btn-success': playStopText() == 'Воспроизвести', 'btn-danger': playStopText() == 'Остановить' }" class="btn" title="Воспроизвести/Остановить (R)"></button>
+        </div>
+      </div>
+      <label>Кадры</label>
+      <ul class="nav nav-tabs">
+        <!-- ko foreach : frames -->
+        <li data-bind="css: { active: $data == $parent.selectedFrame() }, click: $parent.selectFrame">
+          <a data-bind="text: ($index() + 1)" href="#"></a>
+        </li>
+        <!-- /ko -->
+        <li data-bind="click: addFrame, visible: frames().length < $root.framesMax"><a class="btn btn-success" href="#" title="Добавить новый кадр (X)">+</a></li>
+        <li data-bind="click: copyFrame, visible: frames().length < $root.framesMax"><a class="btn btn-success" href="#" title="Копировать выделенный кадр (C)">C</a></li>
+        <li data-bind="click: removeFrame, visible: frames().length > 1"><a class="btn btn-danger" href="#" title="Удалить выбранный кадр (Z)">-</a></li>
+      </ul>
+      <div id="colors">
+        <label>Цвета (макс. 9)</label>
+        <div data-bind="foreach: $root.colors">
+          <div class="colorPicker" data-bind="css: { active: $data == $root.selectedColor() }">
+            <input type="color" data-bind="value: hex" />
+            <div data-bind="click: $root.selectColor, text: ($index() + 1)"></div>
+          </div>
+        </div>
+        <button data-bind="click: $root.addColor, enable: $root.colors().length < $root.colorsMax" class="btn btn-success" title="Добавить новый цвет">Добавить</button>
+        <br />
+        <button data-bind="click: $root.removeColor, enable: ($root.colors().length > 1 && $root.selectedColor() != $root.colors()[0])" class="btn btn-danger" title="Удалить выбранный цвет">Удалить</button>
+        <br />
+        <br />
+        <label>Двигать пиксели</label>
+        <br />
+        <button data-bind="click: $root.selectedChannel().selectedFrame().moveUp" class="btn" title="Двигать пиксели вверх (W)">&#x2191;</button>
+        <br />
+        <button data-bind="click: $root.selectedChannel().selectedFrame().moveDown" class="btn" title="Двигать пиксели вниз (S)">&#x2193;</button>
+        <br />
+        <button data-bind="click: $root.selectedChannel().selectedFrame().moveLeft" class="btn" title="Двигать пиксели влево (A)">&#x2190;</button>
+        <br />
+        <button data-bind="click: $root.selectedChannel().selectedFrame().moveRight" class="btn" title="Двигать пиксели вправо (D)">&#x2192;</button>
+        <br />
+      </div>
+      <div id="tv" data-bind="event: { mouseup: $root.stopDraw }">
+        <table data-bind="with: selectedFrame">
+          <tbody data-bind="foreach: frameRows">
+            <tr data-bind="foreach: pixels">
+              <td data-bind="style: { height: $root.cellHeight() + 'px', backgroundColor: color().hex }, event: { mousedown: $root.startDraw, mouseover: $root.setPixelColor }"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="form-inline pull-right">
+      <div class="form-group pull-right" title="Скрап Механик поддерживает только 16384 соединений между объектами. Если общее число соединений в мире превысит это число, игра крашнется тогда, когда будет выбран соединитель.">
+        <label data-bind="css: { warning: connectionsNo() > 16384 }" class="connections">Всего соединений <span data-bind="text: connectionsNo"></span>/16384</label>
+      </div>
+      <br />
+      <div class="form-group">
+        Название ТВ
+        <input data-bind="value: tvName" type="text" class="form-control" />
+        <button data-bind="click: downloadTv" class="btn btn-success">Скачать ТВ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- TODO: Missing CoffeeScript 2 -->
+
+  <script type="text/javascript">//<![CDATA[
+
+
+function TvViewModel(){var a=this;a.channelsMax=10,a.framesMax=300,a.colorsMax=9,a.width=ko.observable(16),a.height=ko.observable(9),a.colors=ko.observableArray(),a.selectedColor=ko.observable(),a.drawOption=ko.observable(0),a.channels=ko.observableArray(),a.selectedChannel=ko.observable(),a.sizeLock=ko.observable(!1),a.cellHeight=ko.observable(50),a.addMugs=ko.observable(!0),a.externalButtonsSupport=ko.observable(!1),a.advancedShowHide=ko.observable("Show"),a.tvName=ko.observable(),a.tv={},a.tvFolderName=null,a.objectId=100,a.lampConeAngle=25,a.lampLuminance=0,a.defaultLogicGateX=0,a.defaultLogicGateY=0,a.defaultLogicGateD=1,a.defaultTimerY=1,a.defaultTimerD=1,a.connectionsNo=ko.observable(0),a.externalButtonsSupport.subscribe(function(){a.calculateConnectionsNo()}),a.addColor=function(){if(a.colors().length<a.colorsMax){var b=new Color("#ffffff");a.colors.push(b),a.selectColor(b),a.calculateConnectionsNo()}},a.removeColor=function(){if(a.colors().length>1){ko.utils.arrayForEach(a.channels(),function(b){ko.utils.arrayForEach(b.frames(),function(b){ko.utils.arrayForEach(b.frameRows(),function(b){ko.utils.arrayForEach(b.pixels(),function(b){b.color()==a.selectedColor()&&b.color(a.colors()[0])})})})});var b=a.colors().indexOf(a.selectedColor());a.colors.remove(a.selectedColor());var c=b-1>=0?b-1:0;a.selectColor(a.colors()[c]),a.calculateConnectionsNo()}},a.selectColor=function(b){a.selectedColor(b)},a.startDraw=function(b,c){0==c.button&&a.drawOption(1),2==c.button&&a.drawOption(2),a.setPixelColor(b)},a.stopDraw=function(){a.drawOption(0),a.calculateConnectionsNo()},a.setPixelColor=function(b){1==a.drawOption()?b.color(a.selectedColor()):2==a.drawOption()&&a.setDefaultPixelColor(b)},a.setDefaultPixelColor=function(b){b.color(a.colors()[0])},a.addChannel=function(){a.addChannelEx(!1),a.calculateConnectionsNo()},a.addChannelEx=function(b){if(a.channels().length<a.channelsMax){var c=a.channels().indexOf(a.selectedChannel()),d=new Channel(a);return null!=b&&b?a.channels.push(d):(a.channels.splice(c+1,0,d),d.addFrame(),a.selectChannel(d)),d}},a.removeChannel=function(){if(a.channels().length>1){var b=a.channels().indexOf(a.selectedChannel());a.channels.remove(a.selectedChannel());var c=b-1>=0?b-1:0;a.selectChannel(a.channels()[c]),a.calculateConnectionsNo()}},a.selectChannel=function(b){a.selectedChannel(b)},a.setTv=function(){a.colors.push(new Color("#000000")),a.colors.push(new Color("#FF4848")),a.colors.push(new Color("#1FCB4A")),a.colors.push(new Color("#2966B8")),a.colors.push(new Color("#ffffff")),a.selectColor(a.colors()[0]),a.sizeLock(!0),a.addChannel(),a.cellHeight($("#tv td").width()+4)},a.advancedShowHideToggle=function(){"Show"==a.advancedShowHide()?a.advancedShowHide("Hide"):a.advancedShowHide("Show")},a.getNewId=function(){return a.objectId++,a.objectId},a.createLogicGate=function(b,c,d,e,f,g,h){var i={};i.color="000000";var j=[];if(null!=c)for(var k=0;k<c.length;k++)j.push({id:c[k]});return i.controller={active:!1,controllers:j,id:null!=h?h:a.getNewId(),joints:null,mode:b},i.pos={x:null!=d?d:a.defaultLogicGateX,y:null!=f?f:a.defaultLogicGateD,z:null!=e?e:a.defaultLogicGateY},i.shapeId="9f0f56e8-2c31-4d83-996c-d00a9b296c3f",i.xaxis=null!=g&&g?3:2,i.zaxis=1,a.tv.bodies[0].childs.push(i),i.controller.id},a.createTimer=function(b,c,d,e,f){var g={};g.color="000000";var h=[];if(null!=c)for(var i=0;i<c.length;i++)h.push({id:c[i]});return g.controller={active:!1,controllers:h,id:a.getNewId(),joints:null,seconds:0,ticks:b},g.pos={x:null!=d?d:parseInt(a.width()),y:null!=f?f:a.defaultTimerD,z:null!=e?e:a.defaultTimerY},g.shapeId="8f7fd0e7-c46e-4944-a414-7ce2437bb30f",g.xaxis=-3,g.zaxis=2,a.tv.bodies[0].childs.push(g),g.controller.id},a.createLamp=function(b,c,d){var e={};return e.color=b.hex().substring(1),e.controller={color:"000000",coneAngle:a.lampConeAngle,controllers:null,id:a.getNewId(),joints:null,luminance:a.lampLuminance},e.pos={x:c,y:2,z:d},e.shapeId="ed27f5e2-cac5-4a32-a5d9-49f116acc6af",e.xaxis=1,e.zaxis=-2,a.tv.bodies[0].childs.push(e),e.controller.id},a.createButton=function(b,c,d,e){var f={};f.color=null!=d?d:"000000";var g=[];if(null!=c)for(var h=0;h<c.length;h++)g.push({id:c[h]});return f.controller={active:null!=e&&e,controllers:g,id:a.getNewId(),joints:null},f.pos={x:b,y:2,z:0},f.shapeId="1e8d93a4-506b-470d-9ada-9c0a321e2db5",f.xaxis=-1,f.zaxis=-2,a.tv.bodies[0].childs.push(f),f.controller.id},a.createScrew=function(b,c){var d={};d.color="000000",d.pos={x:b+1,y:2,z:c},d.shapeId="c5e56da5-bc3f-4519-91c2-b307d36e15aa",d.xaxis=3,d.zaxis=-1,a.tv.bodies[0].childs.push(d)},a.createMug=function(b,c,d,e){var f={};f.color="000000",f.pos={x:d?b+1:b,y:2,z:e?c:c+1},f.shapeId="a6ec1dcc-07e9-418a-819e-904e28a32f63",d&&e?(f.xaxis=-1,f.zaxis=3):d&&!e?(f.xaxis=-3,f.zaxis=-1):!d&&e?(f.xaxis=3,f.zaxis=1):d||e||(f.xaxis=1,f.zaxis=-3),a.tv.bodies[0].childs.push(f)},a.createPixelForColor=function(b,c,d){var e=a.createLamp(b,c,d),f=a.createLogicGate(1,[e],c,d);return f},a.addCosmetics=function(){for(var b=a.channels().length+1;b<parseInt(a.width())-2;b++){var c={};c.color="111111",c.pos={x:b,y:2,z:1},c.shapeId="b9775316-7272-4a66-a8a9-179108d76f18",c.xaxis=1,c.zaxis=-3,a.tv.bodies[0].childs.push(c)}var d={};if(d.color="111111",d.pos={x:parseInt(a.width()),y:1,z:0},d.shapeId="01d2298b-6cdb-4f4f-bd73-37c76cd60ca3",d.xaxis=2,d.zaxis=3,a.tv.bodies[0].childs.push(d),a.addMugs())for(var b=0;b<a.width();b++)for(var e=0;e<a.height();e++)a.createScrew(b,a.height()-e),a.createMug(b,a.height()-e,b<parseInt(a.width())/2,e<parseInt(a.height())/2)},a.downloadTv=function(){a.objectId=100;for(var b=[],c=0;c<a.width();c++){for(var d=[],e=0;e<a.height();e++){var f={};ko.utils.arrayForEach(a.colors(),function(a){f["c"+a.hex().substring(1)]=null}),d.push(f)}b.push(d)}a.tv={},a.tv.bodies=[{childs:[]}],a.tv.version=1;for(var c=0;c<a.width();c++)for(var e=0;e<a.height();e++){var g=a.createLamp(a.colors()[0],c,a.height()-e),h=a.createLogicGate(4,[g],c,a.height()-e);b[c][e]["c"+a.colors()[0].hex().substring(1)]=h,b[c][e].primaryLogicGateId=h,b[c][e].onlyPrimary=!0}ko.utils.arrayForEach(a.channels(),function(c,d){ko.utils.arrayForEach(c.frames(),function(c,d){for(var e=0;e<c.frameRows().length;e++)for(var f=0;f<c.frameRows()[e].pixels().length;f++){var g=b[f][e]["c"+c.frameRows()[e].pixels()[f].color().hex().substring(1)];if(null==g){var h=a.createLamp(c.frameRows()[e].pixels()[f].color(),f,a.height()-e);lampLogicGateANDId=a.createLogicGate(0,[h],f,a.height()-e),g=a.createLogicGate(1,[lampLogicGateANDId,b[f][e].primaryLogicGateId],f,a.height()-e),b[f][e]["c"+c.frameRows()[e].pixels()[f].color().hex().substring(1)]=g,b[f][e].onlyPrimary=!1}}})});for(var i=[],c=0;c<a.width();c++)for(var e=0;e<a.height();e++)b[c][e].onlyPrimary&&i.push(b[c][e].primaryLogicGateId);a.createLogicGate(0,i);var j=[];ko.utils.arrayForEach(a.channels(),function(c,d){var e=[];ko.utils.arrayForEach(c.frames(),function(d,f){for(var g=[],h=0;h<d.frameRows().length;h++)for(var i=0;i<d.frameRows()[h].pixels().length;i++)if(d.frameRows()[h].pixels()[i].color()!=a.colors()[0]){var j=b[i][h]["c"+d.frameRows()[h].pixels()[i].color().hex().substring(1)];g.push(j)}if(c.frames().length>1){var k=a.objectId+2;f==c.frames().length-1&&1==c.ticksPerFrame()&&(k=e[0]),g.push(k)}var l=a.createLogicGate(0==f?1:0,g);e.push(l),c.frames().length>1&&c.ticksPerFrame()>1&&(k=a.objectId+2,f==c.frames().length-1&&(k=e[0]),c.ticksPerFrame()>2?a.createTimer(c.ticksPerFrame()-3,[k]):a.createLogicGate(0,[k]))});var f=[];if(c.frames().length>1){var i,g=a.createLogicGate(0,[e[0]]),h=a.createLogicGate(2,[g]);i=c.ticksPerFrame()>1?a.createTimer(c.ticksPerFrame()-2,[h]):a.createLogicGate(0,[h]),f=e.splice(1),f.push(g),f.push(h),f.push(i)}else f=e;f.push(a.objectId+1),f.push(a.objectId+2);var k=a.createLogicGate(2,f,d+1,0,2,!0),l=a.createLogicGate(2,[a.objectId+2]),m=a.createLogicGate(0,[k]);if(j.push(m),a.externalButtonsSupport()){var n=a.createLogicGate(1,[l,1],d+1,a.defaultLogicGateY,a.defaultLogicGateD+1);a.createButton(d+2,[n])}else a.createButton(d+2,[l,1])});var k=a.createLogicGate(2,[a.objectId+1,a.objectId+2],0,0,2,!0),l=a.createLogicGate(2,[a.objectId+2]),m=a.createLogicGate(0,[k]);if(j.push(m),a.externalButtonsSupport()){var n=a.createLogicGate(1,[l,1],0,a.defaultLogicGateY,a.defaultLogicGateD+1);a.createButton(1,[n],"992222",!0)}else a.createButton(1,[l,1],"992222",!0);a.createLogicGate(1,[2,3],null,null,null,!1,1),a.createLogicGate(3,[3],null,null,null,!1,2),a.createLogicGate(0,j,null,null,null,!1,3);a.addCosmetics();var r={};r.name=a.tvName(),r.fileId=0,r.description="Created with Scrap Mechanic TV creator: goo.gl / rNtnIf",r.creatorId=0,null==a.tvFolderName&&(a.tvFolderName="xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,function(a){var b=16*Math.random()|0,c="x"==a?b:3&b|8;return c.toString(16)}));var s=new JSZip,t=s.folder(a.tvFolderName);t.file("blueprint.json",ko.toJSON(a.tv)),t.file("description.json",ko.toJSON(r)),t.file("icon.png",iconImageData,{base64:!0}),a.tv={},t.file("tv.json",ko.toJSON(a)),s.file("readme.txt",'Copy the whole folder on location "C:\\Users\\[username]\\AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_[id]\\Blueprints". File tv.json can be loaded back in application https://goo.gl/rNtnIf for edit.'),s.generateAsync({type:"blob"}).then(function(a){saveAs(a,"tv.zip")})},a.clickLoadTv=function(){$("#loadTv").click()},a.uploadTv=function(b,c){var d=c.target.files[0];if(d){var e=new FileReader;e.readAsText(d,"UTF-8"),e.onload=function(b){a.loadTv(JSON.parse(b.target.result))},e.onerror=function(a){alert("Error loading file!")}}},a.loadTv=function(b){a.width(b.width),a.height(b.height),ko.utils.arrayForEach(b.colors,function(b){a.colors.push(new Color(b.hex))}),a.selectedColor(a.colors()[0]),ko.utils.arrayForEach(b.channels,function(c){var d=a.addChannelEx(!0);d.ticksPerFrame(c.ticksPerFrame),ko.utils.arrayForEach(c.frames,function(c){for(var e=d.addFrame(),f=0;f<b.height;f++)for(var g=0;g<b.width;g++)ko.utils.arrayForEach(a.colors(),function(a){a.hex()==c.frameRows[f].pixels[g].color.hex&&e.frameRows()[f].pixels()[g].color(a)})}),d.selectedFrame(d.frames()[0])}),a.selectedChannel(a.channels()[0]),a.externalButtonsSupport(b.externalButtonsSupport),a.tvName(b.tvName),a.tvFolderName=b.tvFolderName,a.sizeLock(!0),a.calculateConnectionsNo(),a.cellHeight($("#tv td").width()+4)},a.calculateConnectionsNo=function(){var b=0;if(a.sizeLock()){for(var c=[],d=0;d<a.width();d++){for(var e=[],f=0;f<a.height();f++){var g={};ko.utils.arrayForEach(a.colors(),function(a){g["c"+a.hex().substring(1)]=null}),e.push(g)}c.push(e)}for(var d=0;d<a.width();d++)for(var f=0;f<a.height();f++)b++,c[d][f]["c"+a.colors()[0].hex().substring(1)]=1,c[d][f].onlyPrimary=!0;ko.utils.arrayForEach(a.channels(),function(a,d){ko.utils.arrayForEach(a.frames(),function(a,d){for(var e=0;e<a.frameRows().length;e++)for(var f=0;f<a.frameRows()[e].pixels().length;f++){var g=c[f][e]["c"+a.frameRows()[e].pixels()[f].color().hex().substring(1)];null==g&&(b+=3,c[f][e]["c"+a.frameRows()[e].pixels()[f].color().hex().substring(1)]=1,c[f][e].onlyPrimary=!1)}})});for(var d=0;d<a.width();d++)for(var f=0;f<a.height();f++)c[d][f].onlyPrimary&&b++;ko.utils.arrayForEach(a.channels(),function(c,d){ko.utils.arrayForEach(c.frames(),function(d,e){for(var f=0;f<d.frameRows().length;f++)for(var g=0;g<d.frameRows()[f].pixels().length;g++)d.frameRows()[f].pixels()[g].color()!=a.colors()[0]&&b++;c.frames().length>1&&b++,c.frames().length>1&&c.ticksPerFrame()>1&&b++}),b+=c.frames().length>1?c.frames().length+5:c.frames().length,b+=6}),b+=a.channels().length+10,a.externalButtonsSupport()&&(b+=a.channels().length+1)}a.connectionsNo(b)}}function Color(a){var b=this;b.hex=ko.observable(a)}function Channel(a){var b=this;b.width=a.width(),b.height=a.height(),b.ticksPerFrame=ko.observable(5),b.frames=ko.observableArray(),b.selectedFrame=ko.observable(),b.playStopText=ko.observable("Play"),b.playInterval=null,b.addFrame=function(){if(b.frames().length<a.framesMax){var c=b.frames().indexOf(b.selectedFrame()),d=new Frame(b.width,b.height,a.colors()[0]);return b.frames.splice(c+1,0,d),b.selectFrame(d),a.calculateConnectionsNo(),d}},b.copyFrame=function(){if(b.frames().length<a.framesMax){var c=b.frames().indexOf(b.selectedFrame()),d=b.selectedFrame().clone();b.frames.splice(c+1,0,d),b.selectFrame(d),a.calculateConnectionsNo()}},b.removeFrame=function(){if(b.frames().length>1){var c=b.frames().indexOf(b.selectedFrame());b.frames.remove(b.selectedFrame());var d=c-1>=0?c-1:0;b.selectFrame(b.frames()[d]),a.calculateConnectionsNo()}},b.selectFrame=function(a){b.selectedFrame(a)},b.playStop=function(){null==b.playInterval?(b.playInterval=setInterval(b.nextFrame,25*b.ticksPerFrame()),b.playStopText("Stop")):(clearInterval(b.playInterval),b.playInterval=null,b.playStopText("Play"))},b.nextFrame=function(){var a=b.frames().indexOf(b.selectedFrame()),c=a+1<b.frames().length?a+1:0;b.selectFrame(b.frames()[c])},b.previousFrame=function(){var a=b.frames().indexOf(b.selectedFrame()),c=a-1>=0?a-1:b.frames().length-1;b.selectFrame(b.frames()[c])}}function Frame(a,b,c){var d=this;d.frameRows=ko.observableArray();for(var e=0;e<b;e++)d.frameRows.push(new FrameRow(a,c));d.clone=function(){for(var e=new Frame(a,b,c),f=0;f<b;f++)for(var g=0;g<a;g++)e.frameRows()[f].pixels()[g].color(d.frameRows()[f].pixels()[g].color());return e},d.moveUp=function(){var b=d.frameRows.splice(1);b.push(new FrameRow(a,c)),d.frameRows(b)},d.moveDown=function(){d.frameRows.splice(0,0,new FrameRow(a,c)),d.frameRows.pop()},d.moveLeft=function(){ko.utils.arrayForEach(d.frameRows(),function(a,b){var d=a.pixels.splice(1);d.push(new Pixel(c)),a.pixels(d)})},d.moveRight=function(){ko.utils.arrayForEach(d.frameRows(),function(a,b){a.pixels.splice(0,0,new Pixel(c)),a.pixels.pop()})}}function FrameRow(a,b){var c=this;c.pixels=ko.observableArray();for(var d=0;d<a;d++)c.pixels.push(new Pixel(b))}function Pixel(a){var b=this;b.color=ko.observable(a)}function InitCustomBindings(){ko.bindingHandlers.enterkey={init:function(a,b,c,d){$(document).keypress(function(a){if(!$("input").is(":focus")){var b=a.which?a.which:a.keyCode;if(b>=49&&b<=57){var c=b-48;d.colors().length>=c&&d.selectColor(d.colors()[c-1])}81!=b&&113!=b||d.selectedChannel().previousFrame(),69!=b&&101!=b||d.selectedChannel().nextFrame(),88!=b&&120!=b||d.selectedChannel().addFrame(),67!=b&&99!=b||d.selectedChannel().copyFrame(),90!=b&&122!=b||d.selectedChannel().removeFrame(),82!=b&&114!=b||d.selectedChannel().playStop(),87!=b&&119!=b||d.selectedChannel().selectedFrame().moveUp(),83!=b&&115!=b||d.selectedChannel().selectedFrame().moveDown(),65!=b&&97!=b||d.selectedChannel().selectedFrame().moveLeft(),68!=b&&100!=b||d.selectedChannel().selectedFrame().moveRight()}})}},ko.bindingHandlers.windowResize={init:function(a,b,c,d){$(window).resize(function(){d.cellHeight($("#tv td").width()+4)})}}}var treePixelMatrixColor=[],iconImageData="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";$(document).ready(function(){InitCustomBindings(),ko.applyBindings(new TvViewModel),$(document).on("contextmenu",function(){return!1})});
+
+
+  //]]></script>
+
+  <script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent){
+      window.parent.parent.postMessage(["resultsFrame", {
+        height: document.body.getBoundingClientRect().height,
+        slug: "bhcf691p"
+      }], "*")
+    }
+
+    // always overwrite window.name, in case users try to set it manually
+    window.name = "result"
+  </script>
+</body>
+</html>
+
