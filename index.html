@@ -144,7 +144,7 @@
 			<footer id="footer" class="wrapper style1-alt">
 				<div class="inner">
 					<ul class="menu">
-						<li>&copy; Elzzie's personal page. Last Edited: 14.12.2025</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+						<li>Elzzie's personal page.</li><li>Last Edited: 14.12.2025</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li><li><p id="metric-clock-display">Metric time: 00:00:00</p></li>
 					</ul>
 				</div>
 			</footer>
@@ -161,6 +161,45 @@
 					emailLink.textContent = decodedEmail;
 					emailLink.href = "mailto:" + decodedEmail;
 				});
+			</script>
+			<script>
+				function updateMetricClock() {
+					const options = {
+						timeZone: 'Europe/Kaliningrad',
+						hour12: false,
+						hour: 'numeric',
+						minute: 'numeric',
+						second: 'numeric'
+					};
+					
+					const now = new Date();
+					const timeString = now.toLocaleTimeString('en-US', options);
+					
+					const parts = timeString.split(':').map(Number);
+					const targetHour = parts[0];
+					const targetMinute = parts[1];
+					const targetSecond = parts[2];
+					
+					const totalSecondsInDay = 24 * 60 * 60;
+					const secondsPassed = (targetHour * 3600) + (targetMinute * 60) + targetSecond;
+
+					const metricSecondsTotal = (secondsPassed / totalSecondsInDay) * 100000;
+					
+					const metricHour = Math.floor(metricSecondsTotal / 10000);
+					const metricMinute = Math.floor((metricSecondsTotal % 10000) / 100);
+					const metricSecond = Math.floor(metricSecondsTotal % 100);
+					
+					const formattedMetricTime = [metricHour, metricMinute, metricSecond]
+						.map(num => String(num).padStart(2, '0'))
+						.join(':');
+					
+					document.getElementById('metric-clock-display').textContent = `Metric Time (GMT+2): ${formattedMetricTime}`;
+				}
+
+				setInterval(updateMetricClock, 100);
+
+				updateMetricClock();
+
 			</script>
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/jquery.scrollex.min.js"></script>
