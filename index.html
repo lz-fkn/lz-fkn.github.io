@@ -107,7 +107,7 @@
 									<ul class="contact">
 										<li>
 											<h3>Email</h3>
-											<a href="mailto:fractus.lol@proton.me">fractus.lol@proton.me</a>
+    										<a href="#" id="email-link">Click to reveal</a>
 										</li>
 										<li>
 											<h3>Social</h3>
@@ -137,6 +137,18 @@
 			</footer>
 
 		<!-- Scripts -->
+			<script>
+				const encodedEmail = "ZnJhY3R1cy5sb2xAcHJvdG9uLm1l";
+
+				const emailLink = document.getElementById("email-link");
+
+				emailLink.addEventListener("click", function(e) {
+					e.preventDefault();
+					const decodedEmail = atob(encodedEmail);
+					emailLink.textContent = decodedEmail;
+					emailLink.href = "mailto:" + decodedEmail;
+				});
+			</script>
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/jquery.scrollex.min.js"></script>
 			<script src="assets/js/jquery.scrolly.min.js"></script>
@@ -146,4 +158,5 @@
 			<script src="assets/js/main.js"></script>
 
 	</body>
+
 </html>
