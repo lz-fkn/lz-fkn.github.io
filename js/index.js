@@ -192,17 +192,17 @@
     ctx.fillText("Detected GPU: " + gpuName, 16, ln(4));
     ctx.fillText("Current date and time is: " + date, 16, ln(5));
 
-    ctx.fillText("C:\\>WIN\\WIN.EXE", 16, ln(7))
-    ctx.fillText("Illegal command: WIN\\WIN.EXE", 16, ln(8))
+    ctx.fillText("C:\\>WIN\\WIN", 16, ln(7))
+    ctx.fillText("Illegal command: WIN\\WIN", 16, ln(8))
 
     ctx.fillText("C:\\>DIR", 16, ln(10))
-    ctx.fillText("Directory if C:\\.", 16, ln(11))
+    ctx.fillText("Directory of C:\\.", 16, ln(11))
     ctx.fillText("PORN     <DIR>                   01-01-2000 12:34", 16, ln(12))
     ctx.fillText("SECRET   <DIR>                   01-01-2000 12:34", 16, ln(13))
-    ctx.fillText("COMMAND   COM             80,085 01-01-2000 12:34", 16, ln(14))
-    ctx.fillText("WEBPAGE   COM              5,124 01-10-2026 22:25", 16, ln(15))
-    ctx.fillText("    2 File(s)             85,209 Bytes", 16, ln(16))
-    ctx.fillText("    2 Dir(s)         262,111,744 Bytes free.", 16, ln(17))
+    ctx.fillText("COMMAND   COM             14,937 01-01-2000 12:34", 16, ln(14))
+    ctx.fillText("WEBPAGE   COM              5,116 01-10-2026 22:25", 16, ln(15))
+    ctx.fillText("    2 File(s)             20,053 Bytes", 16, ln(16))
+    ctx.fillText("    2 Dir(s)           5,318,008 Bytes free.", 16, ln(17))
 
     ctx.fillText("C:\\>WEBPAGE.COM", 16, ln(19));
     if (Math.floor(Date.now() / 250) % 2 === 0)ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, ln(19));
