@@ -38,6 +38,9 @@
 
   let date = new Date().toJSON();
 
+  const epappImg = new Image();
+  epappImg.src = "/assets/images/epapp.png";
+
   const logoImg = new Image();
   logoImg.src = "/assets/images/logo.png";
   let logoRevealProgress = 0;
@@ -97,8 +100,22 @@
   let line1Opacity = 0;
   let line2Opacity = 0;
 
-  const scrollerText =
-    "WELCOME TO MY BULLSHIT WEBPAGE. HERE I DO THINGS AND STUFF EVEN!                                YES I AM A FUCKING FURRY, PULCHRA IS MY WIFE, I LOVE MY MEOWSCARADA!                                BE GAY DO CRIMES!                                I AM NOT CRACKING ANYTHING... YET.                                ALSO TRY PREHISTORIK 2!                                LIFE IS MISERABLE, MIGHT AS WELL HAVE SOME FUN WHILE YOU ARE STILL ALIVE.                                WOAH!                                YOU SHOULD LOVE YOURSELF... NOW!";
+  const scrollerList = [
+    "WELCOME TO MY BULLSHIT WEBPAGE. HERE I DO THINGS AND STUFF EVEN!",
+    "YES I AM A FUCKING FURRY, PULCHRA IS MY WIFE, I LOVE MY MEOWSCARADA!",
+    "BE GAY DO CRIMES!",
+    "I AM NOT CRACKING ANYTHING... YET.",
+    "ALSO TRY PREHISTORIK 2!",
+    "LIFE IS MISERABLE, MIGHT AS WELL HAVE SOME FUN WHILE YOU ARE STILL ALIVE.",
+    "WOAH!",
+    "YOU SHOULD LOVE YOURSELF... NOW!",
+  ]
+
+  function constructScrollerText() {
+    return scrollerList.join(" ".repeat(32));
+  }
+
+  const scrollerText = constructScrollerText();
   const scrollerPeriod = 1000;
   const scrollerY = 98;
   const scrollerAmplitude = 72;
@@ -146,20 +163,51 @@
 
   const gpuName = getGPUName()
 
+  function ln(line) {
+    return 16 * line;
+  }
+
   function drawStartPrompt() {
     ctx.save();
     ctx.font = "16px 'IBMVGA8', monospace";
     ctx.fillStyle = "#fff";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
-    ctx.fillText("PIZ-DOS version 1.33.7", 16, 16);
-    ctx.fillText("Copyleft 2026 AZ, Inc.", 16, 40);
-    ctx.fillText("Detected GPU: " + gpuName, 16, 56)
-    ctx.fillText("Current date and time is: " + date, 16, 72)
-    ctx.fillText("C:\\>WEBPAGE.COM", 16, 104);
-    if (Math.floor(Date.now() / 250) % 2 === 0) ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, 104);
+
+    if (epappImg.complete && epappImg.naturalWidth > 0) {
+      const padding = 16;
+      const maxWidth = 133;
+      const aspectRatio = epappImg.naturalHeight / epappImg.naturalWidth;
+      const width = maxWidth;
+      const height = width * aspectRatio;
+      const x = CANVAS_WIDTH - width - padding;
+      const y = padding;
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(epappImg, x, y, width, height);
+    }
+
+    ctx.fillText("PIZ-DOS version 1.33.7", 16, ln(1));
+    ctx.fillText("Copyleft 2026 AZ, Inc.", 16, ln(2));
+
+    ctx.fillText("Detected GPU: " + gpuName, 16, ln(4));
+    ctx.fillText("Current date and time is: " + date, 16, ln(5));
+
+    ctx.fillText("C:\\>WIN\\WIN.EXE", 16, ln(7))
+    ctx.fillText("Illegal command: WIN\\WIN.EXE", 16, ln(8))
+
+    ctx.fillText("C:\\>DIR", 16, ln(10))
+    ctx.fillText("Directory if C:\\.", 16, ln(11))
+    ctx.fillText("PORN     <DIR>                   01-01-2000 12:34", 16, ln(12))
+    ctx.fillText("SECRET   <DIR>                   01-01-2000 12:34", 16, ln(13))
+    ctx.fillText("COMMAND   COM             80,085 01-01-2000 12:34", 16, ln(14))
+    ctx.fillText("WEBPAGE   COM              5,124 01-10-2026 22:25", 16, ln(15))
+    ctx.fillText("    2 File(s)             85,209 Bytes", 16, ln(16))
+    ctx.fillText("    2 Dir(s)         262,111,744 Bytes free.", 16, ln(17))
+
+    ctx.fillText("C:\\>WEBPAGE.COM", 16, ln(19));
+    if (Math.floor(Date.now() / 250) % 2 === 0)ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, ln(19));
     ctx.fillStyle = "rgb(63,63,63)";
-    ctx.fillText("(click or tap anywhere to enter)", 16, 120);
+    ctx.fillText("(click or tap anywhere to enter)", 16, ln(20));
     ctx.restore();
   }
 
@@ -297,7 +345,7 @@
 
     if (currentState === STATES.RUNNING) {
       ctx.font = "7px 'PressStart2P', monospace";
-      ctx.fillStyle = "rgb(31, 31, 31)";
+      ctx.fillStyle = "rgb(63, 63, 63)";
       ctx.fillText("(CLICK ANYWHERE)", CANVAS_WIDTH / 2, 378);
     }
     ctx.restore();
