@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.png" type="image/png">
+    <title>Countdown to New Year</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .time-box {
+            border: 2px solid #fff;
+            border-radius: 10px;
+            padding: 20px;
+            font-size: calc(4vw + 1rem);
+        }
+
+        .label {
+            font-size: calc(1vw + 0.5rem);
+            margin-top: 10px;
+            text-transform: uppercase;
+        }
+
+        #fullscreen-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 0.8rem;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        #fullscreen-btn:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            #countdown {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .time-box {
+                font-size: calc(6vw + 1rem);
+            }
+
+            .label {
+                font-size: calc(2vw + 0.5rem);
+            }
+        }
+
+        @media (max-width: 480px) {
+            #countdown {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .time-box {
+                font-size: calc(8vw + 1rem);
+            }
+
+            .label {
+                font-size: calc(3vw + 0.5rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="countdown">
+        <div class="time-box">
+            <div id="days">00</div>
+            <div class="label">дней</div>
+        </div>
+        <div class="time-box">
+            <div id="hours">00</div>
+            <div class="label">часов</div>
+        </div>
+        <div class="time-box">
+            <div id="minutes">00</div>
+            <div class="label">минут</div>
+        </div>
+        <div class="time-box">
+            <div id="seconds">00</div>
+            <div class="label">секунд</div>
+        </div>
+    </div>
+
+    <button id="fullscreen-btn">Полный экран</button>
+
+    <script>
+        function updateCountdown() {
+            const now = new Date();
+            const nextYear = new Date(now.getFullYear() + 1, 0, 1);
+            const timeLeft = nextYear - now;
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+
+            document.querySelector('.time-box:nth-child(1) .label').textContent = getRussianLabel(days, ['день', 'дня', 'дней']);
+            document.querySelector('.time-box:nth-child(2) .label').textContent = getRussianLabel(hours, ['час', 'часа', 'часов']);
+            document.querySelector('.time-box:nth-child(3) .label').textContent = getRussianLabel(minutes, ['минута', 'минуты', 'минут']);
+            document.querySelector('.time-box:nth-child(4) .label').textContent = getRussianLabel(seconds, ['секунда', 'секунды', 'секунд']);
+        }
+
+        function getRussianLabel(number, forms) {
+            number = Math.abs(number) % 100;
+            const n1 = number % 10;
+            if (number > 10 && number < 20) return forms[2];
+            if (n1 > 1 && n1 < 5) return forms[1];
+            if (n1 === 1) return forms[0];
+            return forms[2];
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        document.getElementById('fullscreen-btn').addEventListener('click', toggleFullscreen);
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>

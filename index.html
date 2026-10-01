@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <noscript>Hey there. I know this page looks like it should work on any ancient pc and browser, but it actually won't. Upgrade, i dunno...</noscript>
     <title>ELZZiE</title>
+    <link rel="preload"
+      href="/assets/fonts/PressStart2P/PressStart2P.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin>
+    <link rel="preload"
+      href="/assets/fonts/IBMVGA8/ibm_vga8.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin>
     <link rel="stylesheet" href="/css/index.css">
   </head>
   <body>
@@ -48,28 +58,69 @@ music is Quazar of Sanxion - Funky Stars.
           <div class="section-title-box">My Projects</div>
           <div class="section-table-box">
             <table>
-      <tr>
-        <td>lzHash</td>
-        <td>simple hashing utility</td>
-      </tr>
-      <tr>
-        <td>xxmimm</td>
-        <td>my mod manager for xxmi games</td>
-      </tr>
-      <tr>
-        <td>DEMO.EXE</td>
-        <td>128 KB</td>
-      </tr>
-    </table>
+              <tr>
+                <td><a href="https://github.com/lz-fkn/lzhash">lzHash</a></td>
+                <td>simple hashing utility</td>
+              </tr>
+              <tr>
+                <td><a href="https://github.com/lz-fkn/XXMI-Mod-Manager">xxmimm</a></td>
+                <td>my mod manager for xxmi games</td>
+              </tr>
+              <tr>
+                <td><a href="https://github.com/lz-fkn/PyLogAnim">PyLogAnim</a></td>
+                <td>thing for animating logos in python</td>
+              </tr>
+            </table>
           </div>
         </div>
 
-        <div class="footer-text">
-          Contact me at: <a href="mailto:test@test.com">test@test.com</a>
+        <div class="section">
+          <div class="section-title-box">Other Things</div>
+          <div class="section-table-box">
+            <table>
+              <tr>
+                <td><a href="/captcha/captcha_demo.html">Yiff Captcha</a></td>
+                <td>guess the artist demo</td>
+              </tr>
+              <tr>
+                <td><a href="/gmod/index.html">Gmod loading</a></td>
+                <td>ripped straight from gmod</td>
+              </tr>
+              <tr>
+                <td><a href="#">#</a></td>
+                <td>#</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title-box">Links</div>
+          <div class="section-table-box">
+            <table>
+              <tr>
+                <td><a href="#" id="email-link">Click to reveal email</a></td>
+                <td><a href="javascript:void(0)" onclick="navigator.clipboard.writeText('@elzzie'); alert('@elzzie now lives in your clipboard');">Discord (click to copy)</a></td>
+                <td><a href="https://t.me/elzzie_k">Telegram</a></td>
+                <td><a href="https://steamcommunity.com/id/tetra_hydro_cannabinol/">Steam</a></td>
+                <td><a href="https://github.com/lz-fkn">Github</a></td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
     </main>
 
+    <script>
+			const encodedEmail = "ZnJhY3R1cy5sb2xAcHJvdG9uLm1l";
+			const emailLink = document.getElementById("email-link");
+			emailLink.addEventListener("click", function(e) {
+				e.preventDefault();
+				const decodedEmail = atob(encodedEmail);
+				emailLink.textContent = decodedEmail;
+				emailLink.href = "mailto:" + decodedEmail;
+			});
+		</script>
     <script src="/js/index.js"></script>
   </body>
 </html>
