@@ -1,0 +1,36 @@
+/* https://int10h.org/oldschool-pc-fonts/fontlist/font?ibm_vga_8x16 */
+@font-face {
+  font-family: IBMVGA8;
+  src: url(/assets/fonts/IBMVGA8/ibm_vga8.eot);
+  src:
+    url(/assets/fonts/IBMVGA8/ibm_vga8.eot?#iefix) format("embedded-opentype"),
+    url(/assets/fonts/IBMVGA8/ibm_vga8.woff2) format("woff2"),
+    url(/assets/fonts/IBMVGA8/ibm_vga8.woff) format("woff"),
+    url(/assets/fonts/IBMVGA8/ibm_vga8.ttf) format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* https://fonts.google.com/specimen/Press+Start+2P */
+@font-face {
+  font-family: PressStart2P;
+  src: url(/assets/fonts/PressStart2P/PressStart2P.eot);
+  src:
+    url(/assets/fonts/PressStart2P/PressStart2P.eot?#iefix)
+    format("embedded-opentype"),
+    url(/assets/fonts/PressStart2P/PressStart2P.woff2) format("woff2"),
+    url(/assets/fonts/PressStart2P/PressStart2P.woff) format("woff"),
+    url(/assets/fonts/PressStart2P/PressStart2P.ttf) format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+.consoley {
+  font-family: IBMVGA8, monospace;
+  color: white;
+}
+
+.gamey {
+  font-family: PressStart2P, system-ui;
+  color: white;
+}
