@@ -123,6 +123,27 @@
   window.addEventListener("touchstart", triggerUserInput);
   window.addEventListener("keydown", triggerUserInput);
 
+  function getGPUName() {
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
+    if (!gl) return "Unknown GPU";
+    let renderer;
+    renderer = gl.getParameter(gl.RENDERER);
+    if (!renderer || renderer === "WebKit WebGL") {
+      const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+      if (debugInfo) {
+        renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+      }
+    }
+    if (!renderer) return "Unknown GPU";
+    return renderer
+      .replace(/^ANGLE \([^,]+,\s*/i, "")
+      .replace(/\s*\(0x[0-9a-f]+\)/i, "")
+      .replace(/\s+Direct3D\d+(?:\s+.*)?$/i, "")
+      .replace(/,\s*or similar$/i, "")
+      .trim();
+  }
+
   function drawStartPrompt() {
     ctx.save();
     ctx.font = "16px 'IBMVGA8', monospace";
@@ -131,11 +152,12 @@
     ctx.textBaseline = "top";
     ctx.fillText("PIZ-DOS version 1.33.7", 16, 16);
     ctx.fillText("Copyleft 2026 AZ, Inc.", 16, 40);
-    ctx.fillText("Current date and time is: " + date, 16, 56)
-    ctx.fillText("C:\\>WEBPAGE.COM", 16, 80);
-    if (Math.floor(Date.now() / 250) % 2 === 0) ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, 80);
+    ctx.fillText("Detected GPU: " + getGPUName(), 16, 56)
+    ctx.fillText("Current date and time is: " + date, 16, 72)
+    ctx.fillText("C:\\>WEBPAGE.COM", 16, 104);
+    if (Math.floor(Date.now() / 250) % 2 === 0) ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, 104);
     ctx.fillStyle = "rgb(63,63,63)";
-    ctx.fillText("(click or tap anywhere to enter)", 16, 96);
+    ctx.fillText("(click or tap anywhere to enter)", 16, 120);
     ctx.restore();
   }
 
