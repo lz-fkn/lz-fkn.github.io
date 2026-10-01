@@ -144,6 +144,8 @@
       .trim();
   }
 
+  const gpuName = getGPUName()
+
   function drawStartPrompt() {
     ctx.save();
     ctx.font = "16px 'IBMVGA8', monospace";
@@ -152,7 +154,7 @@
     ctx.textBaseline = "top";
     ctx.fillText("PIZ-DOS version 1.33.7", 16, 16);
     ctx.fillText("Copyleft 2026 AZ, Inc.", 16, 40);
-    ctx.fillText("Detected GPU: " + getGPUName(), 16, 56)
+    ctx.fillText("Detected GPU: " + gpuName, 16, 56)
     ctx.fillText("Current date and time is: " + date, 16, 72)
     ctx.fillText("C:\\>WEBPAGE.COM", 16, 104);
     if (Math.floor(Date.now() / 250) % 2 === 0) ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, 104);
