@@ -1,9 +1,17 @@
+
 (function () {
   const canvas = document.getElementById("cracktro-canvas");
   const ctx = canvas.getContext("2d");
 
   const CANVAS_WIDTH = 640;
   const CANVAS_HEIGHT = 400;
+
+  const skipIntro = new URLSearchParams(window.location.search).has("skip_intro");
+
+  if (skipIntro) {
+    canvas.style.display = "none";
+    return;
+  }
 
   const STATES = {
     WAIT_CLICK: "WAIT_CLICK",
@@ -114,7 +122,9 @@
     "LZ WAS HERE.",
     "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     "THE GAME",
-  ]
+    "\*BONK\*",
+    "IF YOU SEE THIS, IT MEANS YOU'RE EITHER TOO BORED, OR TOO FASCINATED BY JUMPING TEXT!"
+  ];
 
   function constructScrollerText() {
     return scrollerList.join(" ".repeat(32));
@@ -149,15 +159,19 @@
     const canvas = document.createElement("canvas");
     const gl = canvas.getContext("webgl2") || canvas.getContext("webgl");
     if (!gl) return "Unknown GPU";
+
     let renderer;
     renderer = gl.getParameter(gl.RENDERER);
+
     if (!renderer || renderer === "WebKit WebGL") {
       const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
       if (debugInfo) {
         renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
       }
     }
+
     if (!renderer) return "Unknown GPU";
+
     return renderer
       .replace(/^ANGLE \([^,]+,\s*/i, "")
       .replace(/\s*\(0x[0-9a-f]+\)/i, "")
@@ -166,7 +180,7 @@
       .trim();
   }
 
-  const gpuName = getGPUName()
+  const gpuName = getGPUName();
 
   function ln(line) {
     return 16 * line;
@@ -187,6 +201,7 @@
       const height = width * aspectRatio;
       const x = CANVAS_WIDTH - width - padding;
       const y = padding;
+
       ctx.imageSmoothingEnabled = false;
       ctx.drawImage(epappImg, x, y, width, height);
     }
@@ -197,21 +212,25 @@
     ctx.fillText("Detected GPU: " + gpuName, 16, ln(4));
     ctx.fillText("Current date and time is: " + date, 16, ln(5));
 
-    ctx.fillText("C:\\>WIN\\WIN", 16, ln(7))
-    ctx.fillText("Illegal command: WIN\\WIN", 16, ln(8))
+    ctx.fillText("C:\\>WIN\\WIN", 16, ln(7));
+    ctx.fillText("Illegal command: WIN\\WIN", 16, ln(8));
 
-    ctx.fillText("C:\\>DIR", 16, ln(10))
-    ctx.fillText("Directory of C:\\.", 16, ln(11))
-    ctx.fillText("PORN     <DIR>                   01-01-2000 12:34", 16, ln(12))
-    ctx.fillText("PROJECTS <DIR>                   01-01-2000 12:34", 16, ln(13))
-    ctx.fillText("SECRET   <DIR>                   01-01-2000 12:34", 16, ln(14))
-    ctx.fillText("COMMAND   COM             15,139 01-01-2000 12:34", 16, ln(15))
-    ctx.fillText("WEBPAGE   COM              5,174 12-11-2026 17:17", 16, ln(16))
-    ctx.fillText("    2 File(s)             20,313 Bytes", 16, ln(17))
-    ctx.fillText("    3 Dir(s)           5,318,008 Bytes free.", 16, ln(18))
+    ctx.fillText("C:\\>DIR", 16, ln(10));
+    ctx.fillText("Directory of C:\\.", 16, ln(11));
+    ctx.fillText("PORN     <DIR>                   01-01-2000 12:34", 16, ln(12));
+    ctx.fillText("PROJECTS <DIR>                   01-01-2000 12:34", 16, ln(13));
+    ctx.fillText("SECRET   <DIR>                   01-01-2000 12:34", 16, ln(14));
+    ctx.fillText("COMMAND   COM             15,139 01-01-2000 12:34", 16, ln(15));
+    ctx.fillText("WEBPAGE   COM              5,174 12-11-2026 17:17", 16, ln(16));
+    ctx.fillText("    2 File(s)             20,313 Bytes", 16, ln(17));
+    ctx.fillText("    3 Dir(s)           5,318,008 Bytes free.", 16, ln(18));
 
     ctx.fillText("C:\\>WEBPAGE.COM", 16, ln(20));
-    if (Math.floor(Date.now() / 250) % 2 === 0)ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, ln(20));
+
+    if (Math.floor(Date.now() / 250) % 2 === 0) {
+      ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, ln(20));
+    }
+
     ctx.fillStyle = "rgb(63,63,63)";
     ctx.fillText("(click or tap anywhere to enter)", 16, ln(21));
     ctx.restore();
@@ -237,6 +256,7 @@
       const endX = CANVAS_WIDTH * revealProgress;
       ctx.rect(0, 0, endX, CANVAS_HEIGHT);
     }
+
     ctx.clip();
 
     ctx.beginPath();
@@ -247,9 +267,11 @@
     for (let x = 0; x <= CANVAS_WIDTH; x += 2) {
       const y = yCenter +
         Math.sin((x / wavelength) * Math.PI * 2 + phase) * amplitude;
+
       if (x === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
+
     ctx.stroke();
     ctx.restore();
   }
@@ -304,6 +326,7 @@
     } else {
       ctx.rect(x, y, targetWidth, targetHeight);
     }
+
     ctx.clip();
 
     ctx.imageSmoothingEnabled = false;
@@ -330,6 +353,7 @@
         ctx.fillText(char, charX, jumpY);
       }
     }
+
     ctx.restore();
   }
 
@@ -354,6 +378,7 @@
       ctx.fillStyle = "rgb(63, 63, 63)";
       ctx.fillText("(CLICK ANYWHERE)", CANVAS_WIDTH / 2, 378);
     }
+
     ctx.restore();
   }
 
@@ -363,36 +388,42 @@
     if (currentState === STATES.INTRO_WAVES) {
       topWaveReveal = Math.min(1, stateTimer / 0.8);
       bottomWaveReveal = Math.min(1, stateTimer / 0.8);
+
       if (stateTimer >= 0.8) {
         currentState = STATES.INTRO_LOGO;
         stateTimer = 0;
       }
     } else if (currentState === STATES.INTRO_LOGO) {
       logoRevealProgress = Math.min(1, stateTimer / 0.75);
+
       if (stateTimer >= 0.75) {
         currentState = STATES.INTRO_TEXT1;
         stateTimer = 0;
       }
     } else if (currentState === STATES.INTRO_TEXT1) {
       line1Opacity = Math.min(1, stateTimer / 0.25);
+
       if (stateTimer >= 0.25) {
         currentState = STATES.INTRO_PAUSE1;
         stateTimer = 0;
       }
     } else if (currentState === STATES.INTRO_PAUSE1) {
       line1Opacity = 1;
+
       if (stateTimer >= 0.25) {
         currentState = STATES.INTRO_TEXT2;
         stateTimer = 0;
       }
     } else if (currentState === STATES.INTRO_TEXT2) {
       line2Opacity = Math.min(1, stateTimer / 0.25);
+
       if (stateTimer >= 0.25) {
         currentState = STATES.INTRO_PAUSE2;
         stateTimer = 0;
       }
     } else if (currentState === STATES.INTRO_PAUSE2) {
       line2Opacity = 1;
+
       if (stateTimer >= 0.25) {
         currentState = STATES.RUNNING;
         stateTimer = 0;
@@ -407,6 +438,7 @@
       const charWidth = 14;
       const totalTextWidth = scrollerText.length * charWidth;
       const loopDistance = totalTextWidth + CANVAS_WIDTH + 160;
+
       if (scrollerX >= loopDistance) {
         scrollerX = 0;
       }
@@ -422,30 +454,35 @@
       }
     } else if (currentState === STATES.OUTRO_LOGO) {
       logoUnloadProgress = Math.min(1, stateTimer / 0.6);
+
       if (stateTimer >= 0.6) {
         currentState = STATES.OUTRO_TEXT1;
         stateTimer = 0;
       }
     } else if (currentState === STATES.OUTRO_TEXT1) {
       line1Opacity = Math.max(0, 1 - stateTimer / 0.25);
+
       if (stateTimer >= 0.25) {
         currentState = STATES.OUTRO_PAUSE1;
         stateTimer = 0;
       }
     } else if (currentState === STATES.OUTRO_PAUSE1) {
       line1Opacity = 0;
+
       if (stateTimer >= 0.25) {
         currentState = STATES.OUTRO_TEXT2;
         stateTimer = 0;
       }
     } else if (currentState === STATES.OUTRO_TEXT2) {
       line2Opacity = Math.max(0, 1 - stateTimer / 0.25);
+
       if (stateTimer >= 0.25) {
         currentState = STATES.OUTRO_PAUSE2;
         stateTimer = 0;
       }
     } else if (currentState === STATES.OUTRO_PAUSE2) {
       line2Opacity = 0;
+
       if (stateTimer >= 0.25) {
         currentState = STATES.END_SCREEN;
         stateTimer = 0;
@@ -468,6 +505,7 @@
       if (scrollerVisible && currentState === STATES.RUNNING) {
         drawScroller(timestamp);
       }
+
       drawWave(
         topWaveY,
         waveAmplitude,
@@ -476,7 +514,9 @@
         topWaveReveal,
         "R2L",
       );
+
       drawLogo();
+
       drawWave(
         bottomWaveY,
         waveAmplitude,
@@ -485,6 +525,7 @@
         bottomWaveReveal,
         "L2R",
       );
+
       drawBottomText();
     }
   }

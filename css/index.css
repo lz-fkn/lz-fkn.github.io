@@ -125,6 +125,7 @@ html, body {
 .section-content-box img {
     display: block;
     width: 330px;
+    margin: auto;
 }
 
 .section-table-box {
