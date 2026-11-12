@@ -22,6 +22,8 @@
 
     <main id="main-content">
       <div class="dos-container">
+        <a id="skipped" href="/?skip_intro">click here to annihilate the genuinely good music...</a>
+
         <div class="logo-box">
             <span>███████╗██╗     ███████╗███████╗██╗███████╗</span>
             <span>██╔════╝██║     ╚══███╔╝╚══███╔╝██║██╔════╝</span>
@@ -130,6 +132,11 @@ music is Quazar of Sanxion - Funky Stars.
 				emailLink.href = "mailto:" + decodedEmail;
 			});
 		</script>
+    <script>
+      if (new URLSearchParams(window.location.search).has('skip_intro')) {
+        document.getElementById('skipped').style.display = 'none';
+      }
+    </script>
     <script src="/js/index.js"></script>
   </body>
 </html>
