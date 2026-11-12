@@ -102,13 +102,18 @@
 
   const scrollerList = [
     "WELCOME TO MY BULLSHIT WEBPAGE. HERE I DO THINGS AND STUFF EVEN!",
-    "YES I AM A FUCKING FURRY, PULCHRA IS MY WIFE, I LOVE MY MEOWSCARADA!",
     "BE GAY DO CRIMES!",
     "I AM NOT CRACKING ANYTHING... YET.",
+    "WAIT FOR MY REPACKS.",
     "ALSO TRY PREHISTORIK 2!",
-    "LIFE IS MISERABLE, MIGHT AS WELL HAVE SOME FUN WHILE YOU ARE STILL ALIVE.",
+    "HORNY!",
+    "LIFE IS MISERABLE, MIGHT AS WELL HAVE SOME FUN WHILE STILL ALIVE.",
     "WOAH!",
+    "YES I AM A FUCKING FURRY, PULCHRA IS MY WIFE, I LOVE MEOWSCARADA!",
     "YOU SHOULD LOVE YOURSELF... NOW!",
+    "LZ WAS HERE.",
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "THE GAME",
   ]
 
   function constructScrollerText() {
@@ -198,16 +203,17 @@
     ctx.fillText("C:\\>DIR", 16, ln(10))
     ctx.fillText("Directory of C:\\.", 16, ln(11))
     ctx.fillText("PORN     <DIR>                   01-01-2000 12:34", 16, ln(12))
-    ctx.fillText("SECRET   <DIR>                   01-01-2000 12:34", 16, ln(13))
-    ctx.fillText("COMMAND   COM             14,937 01-01-2000 12:34", 16, ln(14))
-    ctx.fillText("WEBPAGE   COM              5,116 01-10-2026 22:25", 16, ln(15))
-    ctx.fillText("    2 File(s)             20,053 Bytes", 16, ln(16))
-    ctx.fillText("    2 Dir(s)           5,318,008 Bytes free.", 16, ln(17))
+    ctx.fillText("PROJECTS <DIR>                   01-01-2000 12:34", 16, ln(13))
+    ctx.fillText("SECRET   <DIR>                   01-01-2000 12:34", 16, ln(14))
+    ctx.fillText("COMMAND   COM             15,139 01-01-2000 12:34", 16, ln(15))
+    ctx.fillText("WEBPAGE   COM              5,174 12-11-2026 17:17", 16, ln(16))
+    ctx.fillText("    2 File(s)             20,313 Bytes", 16, ln(17))
+    ctx.fillText("    3 Dir(s)           5,318,008 Bytes free.", 16, ln(18))
 
-    ctx.fillText("C:\\>WEBPAGE.COM", 16, ln(19));
-    if (Math.floor(Date.now() / 250) % 2 === 0)ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, ln(19));
+    ctx.fillText("C:\\>WEBPAGE.COM", 16, ln(20));
+    if (Math.floor(Date.now() / 250) % 2 === 0)ctx.fillText("▁", 16 + ctx.measureText("C:\\>WEBPAGE.COM").width, ln(20));
     ctx.fillStyle = "rgb(63,63,63)";
-    ctx.fillText("(click or tap anywhere to enter)", 16, ln(20));
+    ctx.fillText("(click or tap anywhere to enter)", 16, ln(21));
     ctx.restore();
   }
 

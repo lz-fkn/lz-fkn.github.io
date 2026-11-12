@@ -151,6 +151,24 @@ html, body {
   text-align: center;
   white-space: pre;
 }
+.section-table-box td img {
+  max-width: 100%;
+  max-height: 100px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+.section-table-box td video {
+  max-width: 100%;
+  max-height: 100px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
 
 .section-table-box tr:first-child th {
   border-top: 0;
