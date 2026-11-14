@@ -18,6 +18,8 @@
   <body>
     <main id="main-content">
       <div class="dos-container">
+        <a id="skipped" href="/projects">go back to projects page</a>
+
         <div class="header-box">&equiv;*- ELZZiE PRESENTS... -*&equiv;</div>
         <div class="logo-box">
             <span>██╗  ██╗██╗  ██╗███╗   ███╗██╗███╗   ███╗███╗   ███╗</span>
@@ -30,7 +32,7 @@
 
         <div class="section">
             <div class="section-content-box">
-                <a href="XXMI_Mod_Manager.jpg"><img src="XXMI_Mod_Manager.jpg" title="did you know you can press on O in 'XXMI MOD MANAGER' and see a cat?"></a>
+                <a href="/projects/img/xxmimm.jpg"><img src="/projects/img/xxmimm.jpg" title="did you know you can press on O in 'XXMI MOD MANAGER' and see a cat?"></a>
             </div>
         </div>
 
@@ -43,8 +45,7 @@ simple mod manager for xxmi supported games that doesn't use electron? how darin
 i'll be honest, i made this mod manager back in the beginning of 2026, not knowing there were existing mod managers... how typical of me.
 and i dunno what special features it has that others don't, in fact it lacks some of them (like exporting and stuff), but hey, maybe one day they'll appear in mine too!
 
-it was written in golang (uh-huh, again...) with wails.
-            </pre>
+it was written in golang (uh-huh, again...) with wails.</pre>
           </div>
         </div>
 
@@ -56,8 +57,31 @@ just like lzhash, it's quite easy to use, but obviously some things might not be
 
 you can either import from a gamebanana url, or import it manually!
 
-to make it easier to import mods from gamebanana, i also made a helper script for browsers, which adds quick import buttons to supported mods. to use it, you need to have Tampermonkey (or any of its equivalents) in your browser installed.
-            </pre>
+to make it easier to import mods from gamebanana, i also made a helper script for browsers, which adds quick import buttons to supported mods.</pre>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title-box">Installing</div>
+          <div class="section-content-box">
+            <pre>
+just make sure you have xxmi launcher already installed, <a href="https://github.com/SpectrumQT/XXMI-Launcher">you can find it here.</a></pre>
+            <div class="section-table-box">
+              <table>
+                <tr>
+                  <td>0. locate your xxmi root (click the three dots button near the start button, press "Open Mods Folder", go two folders up until you see "XXMI Launcher Config.json", that's where your xxmi root is)</td>
+                </tr>
+                <tr>
+                  <td>1. drop <a href="https://github.com/lz-fkn/XXMI-Mod-Manager/releases/latest">downloaded xxmimm</a> in the root folder, and launch it once so it registers the url schema (you can confirm that by opening <a href="xxmimm://test">this</a>, if you see a message then it was registered).</td>
+                </tr>
+                <tr>
+                  <td>2. start importing mods, either manually by filling up fields, by pasting a gamebanana url in "Auto Import", or by using an userscript.</td>
+                </tr>
+                <tr>
+                  <td>3. to add a userscript, first make sure your browser has a supported add-on installed (for example, Tampermonkey), then press <a href="https://raw.githubusercontent.com/lz-fkn/XXMI-Mod-Manager/refs/heads/main/gb_quick_import_button.user.js">here to install it</a>.</td>
+                </tr>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -66,10 +90,10 @@ to make it easier to import mods from gamebanana, i also made a helper script fo
           <div class="section-table-box">
             <table>
               <tr>
-                <td><a href="https://github.com/lz-fkn/XXMI-Mod-Manager/releases/latest">Download here!</a></td>
+                <td><a href="https://github.com/lz-fkn/XXMI-Mod-Manager/releases/latest" style="color: #0f0 !important">Download here!</a></td>
               </tr>
               <tr>
-                <td><a href="https://raw.githubusercontent.com/lz-fkn/XXMI-Mod-Manager/refs/heads/main/gb_quick_import_button.user.js">Browser-side helper</a></td>
+                <td><a href="https://raw.githubusercontent.com/lz-fkn/XXMI-Mod-Manager/refs/heads/main/gb_quick_import_button.user.js">GameBanana "auto import" userscript</a></td>
               </tr>
               <tr>
                 <td><a href="https://github.com/lz-fkn/XXMI-Mod-Manager">Source code</a></td>

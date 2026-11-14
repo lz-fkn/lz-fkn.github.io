@@ -59,8 +59,8 @@ html, body {
 
 .logo-box {
   border: 4px double #ffffff;
-  min-width: 380px;
-  min-height: 130px;
+  min-width: 0;
+  min-height: 100px;
   width: fit-content;
   max-width: 100%;
   height: auto;
@@ -69,7 +69,7 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: clamp(5px, 2.5vw, 16px);
   letter-spacing: 2px;
   white-space: pre;
   line-height: 1.2;
@@ -122,9 +122,10 @@ html, body {
   line-height: 1.35;
 }
 
-.section-content-box img {
+.section-content-box img,
+.section-content-box video {
     display: block;
-    width: 330px;
+    max-width: 100%;
     margin: auto;
 }
 
@@ -135,10 +136,12 @@ html, body {
   background-color: #000000;
   text-align: center;
   overflow: hidden;
+  margin: 0 auto;
 }
 
 .section-table-box table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-family: inherit;
   font-size: inherit;
@@ -148,28 +151,21 @@ html, body {
 .section-table-box th,
 .section-table-box td {
   border: 1px solid #ffffff;
-  padding: 6px 10px;
+  padding: 2px 2px;
   text-align: center;
-  white-space: pre;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
-.section-table-box td img {
-  max-width: 100%;
-  max-height: 100px;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto;
-}
+.section-table-box td img,
 .section-table-box td video {
   max-width: 100%;
-  max-height: 100px;
   width: auto;
   height: auto;
   object-fit: contain;
   display: block;
   margin: 0 auto;
 }
+
 
 .section-table-box tr:first-child th {
   border-top: 0;
@@ -182,6 +178,12 @@ html, body {
 .section-table-box th:first-child,
 .section-table-box td:first-child {
   border-left: 0;
+  width: 20%;
+}
+
+.section-table-box th:nth-child(2),
+.section-table-box td:nth-child(2) {
+  width: 60%;
 }
 
 .section-table-box th:last-child,

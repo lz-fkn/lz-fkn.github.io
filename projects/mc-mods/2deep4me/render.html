@@ -1,90 +1,92 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <noscript>Hey there. I know this page looks like it should work on any ancient pc and browser, but it actually won't. Upgrade, i dunno...</noscript>
+    <title>2deep4me demo | ELZZiE</title>
 
-<style>
-#chunk-viewer {
-    width: 100%;
-    height: 16384px;
-    position: relative;
-    overflow: visible;
-}
+    <style>
+      html, body {
+        margin: 0;
+        background: black;
+      }
 
-#chunk-stage {
-    position: sticky;
-    top: 0;
-    width: 100%;
-    height: 100vh;
-    height: 100dvh;
-    min-height: 320px;
-    overflow: hidden;
-    background: #111;
-    touch-action: pan-y;
-}
+      #chunk-viewer {
+        width: 100%;
+        height: 9216px;
+        position: relative;
+        overflow: visible;
+      }
 
-#chunk-stage canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
+      @media (min-width: 768px) {
+        #chunk-viewer {
+          height: 32768px;
+        }
+      }
 
-#chunk-loading {
-    position: absolute;
-    top: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5;
-    padding: 10px 16px;
-    border-radius: 8px;
-    background: rgba(0,0,0,.8);
-    color: white;
-    font: 14px sans-serif;
-    pointer-events: none;
-}
+      #chunk-stage {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        min-height: 320px;
+        overflow: hidden;
+        background: #111;
+        touch-action: pan-y;
+      }
 
-body {
-    background-color: black;
-}
-</style>
-</head>
+      #chunk-stage canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
 
-<body>
+      #chunk-loading {
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 5;
+        padding: 10px 16px;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        font: 14px sans-serif;
+        pointer-events: none;
+      }
+    </style>
+  </head>
 
-<div id="chunk-viewer">
-    <div id="chunk-stage">
+  <body>
+    <div id="chunk-viewer">
+      <div id="chunk-stage">
         <div id="chunk-loading">Loading chunk...</div>
+      </div>
     </div>
-</div>
 
-<script type="importmap">
-{
-    "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
-    }
-}
-</script>
-
-<script type="module">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module">
 import * as THREE from "three";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { MTLLoader } from "three/addons/loaders/MTLLoader.js";
 import { gunzipSync } from "https://cdn.jsdelivr.net/npm/fflate@0.8.2/esm/browser.js";
 
 // -----------------------------------------
-
 const ARCHIVE_URL = "chunk.tar.gz";
 
 const ROTATION_SECONDS = 45;
 const CAMERA_AZIMUTH = 35;
 const CAMERA_ELEVATION = 12;
-
-const VIRTUAL_HEIGHT = 32768;
 const MAX_PIXEL_RATIO = 1.5;
-
 // -----------------------------------------
 
 const container = document.getElementById("chunk-viewer");
@@ -93,32 +95,23 @@ const loading = document.getElementById("chunk-loading");
 
 const scene = new THREE.Scene();
 
-const renderer = new THREE.WebGLRenderer({
-    alpha: true,
-    antialias: false,
-    powerPreference: "high-performance"
-});
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
 
-renderer.setPixelRatio(
-    Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO)
-);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO));
 
-renderer.setSize(stage.clientWidth, stage.clientHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setClearColor(0x000000, 0);
 
 stage.appendChild(renderer.domElement);
 
-const camera = new THREE.OrthographicCamera(
-    -1, 1, 1, -1, 0.1, 100000
-);
+const camera = new THREE.OrthographicCamera(-1, 1, 1,-1, 0.1, 100000);
 
 camera.up.set(0, 0, 1);
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0x555566, 1.8));
 
 const sun = new THREE.DirectionalLight(0xffffff, 2.2);
-sun.position.set(1, -2, 3);
+sun.position.set(1,-2, 3);
 scene.add(sun);
 
 const fill = new THREE.DirectionalLight(0xffffff, 0.7);
@@ -138,466 +131,376 @@ let baseVisibleWorldHeight = 0;
 const az = THREE.MathUtils.degToRad(CAMERA_AZIMUTH);
 const el = THREE.MathUtils.degToRad(CAMERA_ELEVATION);
 
-const cameraDirection = new THREE.Vector3(
-    Math.cos(az) * Math.cos(el),
-    Math.sin(az) * Math.cos(el),
-    Math.sin(el)
-).normalize();
+const cameraDirection = new THREE.Vector3(Math.cos(az) * Math.cos(el), Math.sin(az) * Math.cos(el), Math.sin(el)).normalize();
 
 const worldUp = new THREE.Vector3(0, 0, 1);
 
-const screenRight = new THREE.Vector3()
-    .crossVectors(worldUp, cameraDirection)
-    .normalize();
+const screenRight = new THREE.Vector3().crossVectors(worldUp, cameraDirection).normalize();
 
-const screenUp = new THREE.Vector3()
-    .crossVectors(cameraDirection, screenRight)
-    .normalize();
+const screenUp = new THREE.Vector3().crossVectors(cameraDirection, screenRight).normalize();
 
 const zoomPan = new THREE.Vector3();
 
 async function extractTarGz(url) {
-    const response = await fetch(url);
+  const response = await fetch(url);
 
-    if (!response.ok) {
-        throw new Error(
-            `Archive download failed: ${response.status}`
-        );
+  if (!response.ok) {
+    throw new Error(`Archive download failed: ${response.status}`);
+  }
+
+  const compressed = new Uint8Array(await response.arrayBuffer());
+
+  loading.textContent = "Extracting archive...";
+
+  const tar = gunzipSync(compressed);
+  const files = new Map();
+
+  const decoder = new TextDecoder();
+
+  let offset = 0;
+
+  while (offset + 512 <= tar.length) {
+    const header = tar.subarray(offset, offset + 512);
+
+    if (header.every(byte => byte === 0)) break;
+
+    const name = decoder.decode(header.subarray(0, 100)).replace(/\0.*$/, "");
+
+    const prefix = decoder.decode(header.subarray(345, 500)).replace(/\0.*$/, "");
+
+    const fullName = prefix ? `${prefix}/${name}` : name;
+
+    const sizeString = decoder.decode(header.subarray(124, 136)).replace(/\0.*$/, "").trim();
+
+    const size = parseInt(sizeString || "0", 8);
+    const type = header[156];
+
+    const dataStart = offset + 512;
+    const dataEnd = dataStart + size;
+
+    if (Number.isFinite(size) && size >= 0 && (type === 0 || type === 48 || type === 0x30)) {
+      files.set(fullName, tar.slice(dataStart, dataEnd));
     }
 
-    const compressed = new Uint8Array(
-        await response.arrayBuffer()
-    );
+    offset = dataStart + Math.ceil(size / 512) * 512;
+  }
 
-    loading.textContent = "Extracting archive...";
-
-    const tar = gunzipSync(compressed);
-    const files = new Map();
-
-    const decoder = new TextDecoder();
-
-    let offset = 0;
-
-    while (offset + 512 <= tar.length) {
-        const header = tar.subarray(offset, offset + 512);
-
-        if (header.every(byte => byte === 0)) break;
-
-        const name = decoder.decode(
-            header.subarray(0, 100)
-        ).replace(/\0.*$/, "");
-
-        const prefix = decoder.decode(
-            header.subarray(345, 500)
-        ).replace(/\0.*$/, "");
-
-        const fullName = prefix
-            ? `${prefix}/${name}`
-            : name;
-
-        const sizeString = decoder.decode(
-            header.subarray(124, 136)
-        ).replace(/\0.*$/, "").trim();
-
-        const size = parseInt(sizeString || "0", 8);
-
-        const type = header[156];
-
-        const dataStart = offset + 512;
-        const dataEnd = dataStart + size;
-
-        if (
-            Number.isFinite(size) &&
-            size >= 0 &&
-            (type === 0 || type === 48 || type === 0x30)
-        ) {
-            files.set(
-                fullName,
-                tar.slice(dataStart, dataEnd)
-            );
-        }
-
-        offset = dataStart + Math.ceil(size / 512) * 512;
-    }
-
-    return files;
+  return files;
 }
 
+let resizeFrame = 0;
+
 function resizeRenderer() {
-    const width = stage.clientWidth;
-    const height = stage.clientHeight;
+  const width = stage.clientWidth;
+  const height = stage.clientHeight;
 
-    if (!width || !height) return;
+  if (!width || !height) return;
 
-    renderer.setSize(width, height, false);
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO);
+
+  renderer.setPixelRatio(pixelRatio);
+  renderer.setSize(width, height, false);
 }
 
 function frameModel() {
-    const width = stage.clientWidth;
-    const height = stage.clientHeight;
+  const width = stage.clientWidth;
+  const height = stage.clientHeight;
 
-    if (!width || !height) return;
+  if (!width || !height || !loaded) return;
 
-    const aspect = width / height;
+  const aspect = width / height;
 
-    const horizontalDiagonal = Math.hypot(
-        modelSize.x,
-        modelSize.y
-    );
+  const horizontalDiagonal = Math.hypot(modelSize.x, modelSize.y);
 
-    const projectedHeight =
-        modelSize.z * Math.cos(el) +
-        horizontalDiagonal * Math.sin(el);
+  const projectedHeight = modelSize.z * Math.cos(el) + horizontalDiagonal * Math.sin(el);
 
-    virtualWorldHeight = projectedHeight * 1.12;
+  virtualWorldHeight = projectedHeight * 1.02;
 
-    baseVisibleWorldHeight =
-        virtualWorldHeight * height / VIRTUAL_HEIGHT;
+  const virtualHeight = container.offsetHeight;
 
-    camera.left = -baseVisibleWorldHeight * aspect / 2;
-    camera.right = baseVisibleWorldHeight * aspect / 2;
-    camera.top = baseVisibleWorldHeight / 2;
-    camera.bottom = -baseVisibleWorldHeight / 2;
+  baseVisibleWorldHeight = virtualWorldHeight * height / virtualHeight;
 
-    camera.updateProjectionMatrix();
+  camera.left = -baseVisibleWorldHeight * aspect / 2;
+  camera.right = baseVisibleWorldHeight * aspect / 2;
+  camera.top = baseVisibleWorldHeight / 2;
+  camera.bottom = -baseVisibleWorldHeight / 2;
 
-    updateCameraForScroll();
+  camera.updateProjectionMatrix();
+
+  updateCameraForScroll();
 }
+
+function handleResize() {
+  if (resizeFrame) {
+    cancelAnimationFrame(resizeFrame);
+  }
+
+  resizeFrame = requestAnimationFrame(() => {
+    resizeFrame = 0;
+
+    resizeRenderer();
+
+    if (loaded) {
+      frameModel();
+    }
+  });
+}
+
+const resizeObserver = new ResizeObserver(handleResize);
+resizeObserver.observe(stage);
+
+const viewerObserver = new ResizeObserver(handleResize);
+viewerObserver.observe(container);
+
+window.addEventListener("resize", handleResize, { passive: true });
+
+window.addEventListener("orientationchange", handleResize, { passive: true });
+
+handleResize();
 
 function updateCameraForScroll() {
-    if (!loaded) return;
+  if (!loaded || !baseVisibleWorldHeight) return;
 
-    const rect = container.getBoundingClientRect();
+  const rect = container.getBoundingClientRect();
 
-    const scrollRange = Math.max(
-        1,
-        container.offsetHeight - stage.clientHeight
-    );
+  const scrollRange = Math.max(1, container.offsetHeight - stage.clientHeight);
 
-    const progress = THREE.MathUtils.clamp(
-        -rect.top / scrollRange,
-        0,
-        1
-    );
+  const progress = THREE.MathUtils.clamp(-rect.top / scrollRange, 0, 1);
 
-    const visibleHeight =
-        baseVisibleWorldHeight / camera.zoom;
+  const visibleHeight = baseVisibleWorldHeight / camera.zoom;
 
-    const travel = Math.max(
-        0,
-        (virtualWorldHeight - visibleHeight) / 2
-    );
+  const travel = Math.max(0, (virtualWorldHeight - visibleHeight) / 2);
 
-    const verticalOffset = travel * (1 - 2 * progress);
+  const verticalOffset = travel * (1 - 2 * progress);
 
-    const target = modelCenter.clone()
-        .addScaledVector(screenUp, verticalOffset)
-        .add(zoomPan);
+  const target = modelCenter.clone().addScaledVector(screenUp, verticalOffset).add(zoomPan);
 
-    const distance = Math.max(modelSize.length() * 2, 100);
+  const distance = Math.max(modelSize.length() * 2, 100);
 
-    camera.position.copy(target)
-        .addScaledVector(cameraDirection, distance);
+  camera.position.copy(target).addScaledVector(cameraDirection, distance);
 
-    camera.lookAt(target);
+  camera.lookAt(target);
 
-    camera.near = 0.1;
-    camera.far = distance * 4 + modelSize.length();
+  camera.near = 0.1;
+  camera.far = distance * 4 + modelSize.length();
 
-    camera.updateProjectionMatrix();
-    camera.updateMatrixWorld();
+  camera.updateProjectionMatrix();
+  camera.updateMatrixWorld();
 }
 
+window.addEventListener("scroll", () => {
+  updateCameraForScroll();
+}, { passive: true });
+
 function zoomAt(clientX, clientY, factor) {
-    const rect = stage.getBoundingClientRect();
+  const rect = stage.getBoundingClientRect();
 
-    const x = ((clientX - rect.left) / rect.width) * 2 - 1;
-    const y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  const x = ((clientX - rect.left) / rect.width) * 2 - 1;
+  const y = -((clientY - rect.top) / rect.height) * 2 + 1;
 
-    const oldZoom = camera.zoom;
+  const oldZoom = camera.zoom;
 
-    const newZoom = THREE.MathUtils.clamp(
-        oldZoom * factor,
-        1,
-        40
-    );
+  const newZoom = THREE.MathUtils.clamp(oldZoom * factor, 1, 40);
 
-    if (newZoom === oldZoom) return;
+  if (newZoom === oldZoom) return;
 
-    const shiftFactor =
-        0.5 * (1 / oldZoom - 1 / newZoom);
+  const shiftFactor = 0.5 * (1 / oldZoom - 1 / newZoom);
 
-    const aspect = stage.clientWidth / stage.clientHeight;
-    const baseWidth = baseVisibleWorldHeight * aspect;
+  const aspect = stage.clientWidth / stage.clientHeight;
+  const baseWidth = baseVisibleWorldHeight * aspect;
 
-    zoomPan.addScaledVector(
-        screenRight,
-        x * baseWidth * shiftFactor
-    );
+  zoomPan.addScaledVector(screenRight, x * baseWidth * shiftFactor);
 
-    zoomPan.addScaledVector(
-        screenUp,
-        y * baseVisibleWorldHeight * shiftFactor
-    );
+  zoomPan.addScaledVector(screenUp, y * baseVisibleWorldHeight * shiftFactor);
 
-    camera.zoom = newZoom;
+  camera.zoom = newZoom;
 
-    updateCameraForScroll();
+  updateCameraForScroll();
 }
 
 function setupModel(object) {
-    loading.textContent = "Preparing model...";
+  loading.textContent = "Preparing model...";
 
-    object.rotation.x = Math.PI / 2;
+  object.rotation.x = Math.PI / 2;
 
-    object.updateMatrixWorld(true);
+  object.updateMatrixWorld(true);
 
-    const bounds = new THREE.Box3().setFromObject(object);
+  const bounds = new THREE.Box3().setFromObject(object);
 
-    modelCenter.copy(bounds.getCenter(new THREE.Vector3()));
-    modelSize.copy(bounds.getSize(new THREE.Vector3()));
+  modelCenter.copy(bounds.getCenter(new THREE.Vector3()));
+  modelSize.copy(bounds.getSize(new THREE.Vector3()));
 
-    if (
-        !Number.isFinite(modelSize.length()) ||
-        modelSize.length() === 0
-    ) {
-        throw new Error("Invalid or empty OBJ geometry.");
-    }
+  if (!Number.isFinite(modelSize.length()) || modelSize.length() === 0) {
+    throw new Error("Invalid or empty OBJ geometry.");
+  }
 
-    const originalWorldMatrix = object.matrixWorld.clone();
+  const originalWorldMatrix = object.matrixWorld.clone();
 
-    pivot.position.copy(modelCenter);
-    pivot.rotation.set(0, 0, 0);
-    pivot.scale.set(1, 1, 1);
+  pivot.position.copy(modelCenter);
+  pivot.rotation.set(0, 0, 0);
+  pivot.scale.set(1, 1, 1);
 
-    pivot.add(object);
+  pivot.add(object);
 
-    object.matrixAutoUpdate = false;
+  object.matrixAutoUpdate = false;
 
-    object.matrix.copy(
-        new THREE.Matrix4().makeTranslation(
-            -modelCenter.x,
-            -modelCenter.y,
-            -modelCenter.z
-        ).multiply(originalWorldMatrix)
-    );
+  object.matrix.copy(new THREE.Matrix4().makeTranslation(-modelCenter.x,-modelCenter.y,-modelCenter.z).multiply(originalWorldMatrix));
 
-    object.matrixWorldNeedsUpdate = true;
+  object.matrixWorldNeedsUpdate = true;
 
-    camera.up.set(0, 0, 1);
+  camera.up.set(0, 0, 1);
 
-    frameModel();
+  loaded = true;
 
-    pivot.updateMatrixWorld(true);
+  handleResize();
 
-    loaded = true;
-    loading.style.display = "none";
+  loading.style.display = "none";
 
-    console.log("Model dimensions:", modelSize.toArray());
+  pivot.updateMatrixWorld(true);
+
+  console.log("Model dimensions:", modelSize.toArray());
 }
 
 async function loadArchive() {
-    try {
-        loading.textContent = "Downloading archive...";
+  try {
+    loading.textContent = "Downloading archive...";
 
-        const files = await extractTarGz(ARCHIVE_URL);
+    const files = await extractTarGz(ARCHIVE_URL);
 
-        console.log(
-            "Archive contents:",
-            [...files.keys()]
-        );
+    console.log("Archive contents:", [...files.keys()]);
 
-        loading.textContent = "Preparing textures...";
+    loading.textContent = "Preparing textures...";
 
-        const textureURLs = new Map();
+    const textureURLs = new Map();
 
-        for (const [name, data] of files) {
-            if (name.toLowerCase().endsWith(".png")) {
-                const blob = new Blob(
-                    [data],
-                    { type: "image/png" }
-                );
+    for (const [name, data] of files) {
+      if (name.toLowerCase().endsWith(".png")) {
+        const blob = new Blob([data], { type: "image/png" });
 
-                textureURLs.set(
-                    name,
-                    URL.createObjectURL(blob)
-                );
-            }
-        }
-
-        const mtlData = files.get("chunk.mtl");
-        const objData = files.get("chunk.obj");
-
-        if (!objData) {
-            throw new Error("chunk.obj missing from archive");
-        }
-
-        let materials = null;
-
-        if (mtlData) {
-            loading.textContent = "Loading materials...";
-
-            let mtlText = new TextDecoder().decode(mtlData);
-
-            mtlText = mtlText.replace(
-                /^(map_\w+)\s+(.+)$/gm,
-                (match, directive, filename) => {
-                    const cleanName = filename.trim();
-
-                    const candidates = [
-                        cleanName,
-                        `tex/${cleanName}`,
-                        cleanName.replace(/^.*[\\/]/, ""),
-                        `tex/${cleanName.replace(/^.*[\\/]/, "")}`
-                    ];
-
-                    for (const candidate of candidates) {
-                        const textureURL = textureURLs.get(candidate);
-
-                        if (textureURL) {
-                            return `${directive} ${textureURL}`;
-                        }
-                    }
-
-                    return match;
-                }
-            );
-
-            const mtlLoader = new MTLLoader();
-
-            materials = mtlLoader.parse(
-                mtlText,
-                ""
-            );
-
-            materials.preload();
-        }
-
-        loading.textContent = "Parsing 3D model...";
-
-        const objText = new TextDecoder().decode(objData);
-
-        const objLoader = new OBJLoader();
-
-        if (materials) {
-            objLoader.setMaterials(materials);
-        }
-
-        const object = objLoader.parse(objText);
-
-        setupModel(object);
-
-        console.log(
-            `Loaded ${files.size} files from chunk.tar.gz`
-        );
-
-    } catch (error) {
-        console.error("Archive loading failed:", error);
-
-        loading.textContent =
-            "Failed to load archive. Check console.";
+        textureURLs.set(name, URL.createObjectURL(blob));
+      }
     }
+
+    const mtlData = files.get("chunk.mtl");
+    const objData = files.get("chunk.obj");
+
+    if (!objData) {
+      throw new Error("chunk.obj missing from archive");
+    }
+
+    let materials = null;
+
+    if (mtlData) {
+      loading.textContent = "Loading materials...";
+
+      let mtlText = new TextDecoder().decode(mtlData);
+
+      mtlText = mtlText.replace(/^(map_\w+)\s+(.+)$/gm, (match, directive, filename) => {
+        const cleanName = filename.trim();
+
+        const candidates = [cleanName, `tex/${cleanName}`, cleanName.replace(/^.*[\\/]/, ""), `tex/${cleanName.replace(/^.*[\\/]/, "")}`];
+
+        for (const candidate of candidates) {
+          const textureURL = textureURLs.get(candidate);
+
+          if (textureURL) {
+            return `${directive} ${textureURL}`;
+          }
+        }
+
+        return match;
+      });
+
+      const mtlLoader = new MTLLoader();
+
+      materials = mtlLoader.parse(mtlText, "");
+      materials.preload();
+    }
+
+    loading.textContent = "Parsing 3D model...";
+
+    const objText = new TextDecoder().decode(objData);
+
+    const objLoader = new OBJLoader();
+
+    if (materials) {
+      objLoader.setMaterials(materials);
+    }
+
+    const object = objLoader.parse(objText);
+
+    setupModel(object);
+
+    console.log(`Loaded ${files.size} files from chunk.tar.gz`);
+
+  } catch (error) {
+    console.error("Archive loading failed:", error);
+
+    loading.textContent = "Failed to load archive. Check console.";
+  }
 }
 
-loadArchive();
-
 stage.addEventListener("wheel", event => {
-    if (!event.ctrlKey) return;
+  if (!event.ctrlKey) return;
 
-    event.preventDefault();
+  event.preventDefault();
 
-    zoomAt(
-        event.clientX,
-        event.clientY,
-        Math.exp(-event.deltaY * 0.001)
-    );
+  zoomAt(event.clientX, event.clientY, Math.exp(-event.deltaY * 0.001));
 }, { passive: false });
 
 let previousPinchDistance = 0;
 
 function touchDistance(a, b) {
-    return Math.hypot(
-        b.clientX - a.clientX,
-        b.clientY - a.clientY
-    );
+  return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
 }
 
 stage.addEventListener("touchstart", event => {
-    if (event.touches.length === 2) {
-        previousPinchDistance = touchDistance(
-            event.touches[0],
-            event.touches[1]
-        );
-    }
+  if (event.touches.length === 2) {
+    previousPinchDistance = touchDistance(event.touches[0], event.touches[1]);
+  }
 }, { passive: true });
 
 stage.addEventListener("touchmove", event => {
-    if (event.touches.length !== 2) return;
+  if (event.touches.length !== 2) return;
 
-    event.preventDefault();
+  event.preventDefault();
 
-    const a = event.touches[0];
-    const b = event.touches[1];
+  const a = event.touches[0];
+  const b = event.touches[1];
 
-    const distance = touchDistance(a, b);
+  const distance = touchDistance(a, b);
 
-    if (previousPinchDistance > 0) {
-        zoomAt(
-            (a.clientX + b.clientX) / 2,
-            (a.clientY + b.clientY) / 2,
-            distance / previousPinchDistance
-        );
-    }
+  if (previousPinchDistance > 0) {
+    zoomAt((a.clientX + b.clientX) / 2, (a.clientY + b.clientY) / 2, distance / previousPinchDistance);
+  }
 
-    previousPinchDistance = distance;
+  previousPinchDistance = distance;
 }, { passive: false });
 
 stage.addEventListener("touchend", event => {
-    if (event.touches.length < 2) {
-        previousPinchDistance = 0;
-    }
+  if (event.touches.length < 2) {
+    previousPinchDistance = 0;
+  }
 });
 
-const resizeObserver = new ResizeObserver(() => {
-    resizeRenderer();
-
-    if (loaded) {
-        frameModel();
-    }
-});
-
-resizeObserver.observe(stage);
-
-window.addEventListener("scroll", () => {
-    updateCameraForScroll();
-}, { passive: true });
-
-window.addEventListener("resize", () => {
-    resizeRenderer();
-
-    if (loaded) {
-        frameModel();
-    }
-});
+loadArchive();
 
 let previous = performance.now();
 
 function animate(now) {
-    requestAnimationFrame(animate);
+  requestAnimationFrame(animate);
 
-    const dt = Math.min((now - previous) / 1000, 0.05);
-    previous = now;
+  const dt = Math.min((now - previous) / 1000, 0.05);
+  previous = now;
 
-    if (loaded) {
-        pivot.rotation.z +=
-            dt * (Math.PI * 2 / ROTATION_SECONDS);
-    }
+  if (loaded) {
+    pivot.rotation.z += dt * (Math.PI * 2 / ROTATION_SECONDS);
+  }
 
-    renderer.render(scene, camera);
+  renderer.render(scene, camera);
 }
 
 requestAnimationFrame(animate);
-
-</script>
-</body>
+    </script>
+  </body>
 </html>
